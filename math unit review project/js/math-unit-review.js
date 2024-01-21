@@ -37,7 +37,14 @@ class MathUnitReview {
       initInfo.responseC,
       initInfo.responseD,
     ];
- 
+    vars.questionAnswered = [
+      initInfo.answered1,
+      initInfo.answered2,
+      initInfo.answered3,
+      initInfo.answered4,
+      initInfo.answered5
+    ];
+    
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
     
@@ -79,6 +86,7 @@ class MathUnitReview {
     qInfo.question[currentQuestionNum - 1].selection = selectionValue;
     
     player.SetVar(vars.currentQuestionSelection, selectionValue);
+    player.SetVar(vars.questionAnswered[currentQuestionNum - 1], (selectionValue != -1));
   }
   
   static changeQuestion(mode)
@@ -104,11 +112,29 @@ class MathUnitReview {
         return;
       }
       newQuestionNum = currentQuestionNum - 1;
+      
+    } else if ([1,2,3,4,5].includes(mode)) {
+      newQuestionNum = mode;
     }
     
     player.SetVar(vars.currentQuestionNumber, newQuestionNum);
   }
   
+
+  static clearAnswers()
+  {
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    const qInfo = MathUnitReview.questionInfo;
+
+    for (let i = 0; i < qInfo.numQuestions; i++) {
+      player.SetVar(vars.questionAnswered[i], false);
+      qInfo.question[i].selection = -1;
+    }
+    
+    player.SetVar(vars.currentQuestionSelection, -1);
+  }
+
   static checkAnswers()
   {
     console.log("MathUnitReview.checkAnswers");
