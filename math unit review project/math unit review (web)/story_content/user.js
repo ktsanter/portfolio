@@ -2,11 +2,14 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "5ntdSFn3xdz":
+      case "6gYKngH3U1L":
         Script1();
         break;
-      case "5zWIUu9R0Fy":
+      case "62Y1w5VUlQI":
         Script2();
+        break;
+      case "5dsAv89zgMo":
+        Script3();
         break;
   }
 }
@@ -29,5 +32,10 @@ function Script1()
 function Script2()
 {
   MathUnitReview.loadQuestion();
+}
+
+function Script3()
+{
+  MathUnitReview.checkAnswers();
 }
 

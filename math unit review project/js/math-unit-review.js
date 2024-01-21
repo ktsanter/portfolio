@@ -19,7 +19,7 @@ class MathUnitReview {
   //------------------------------------------------------------------------------
   static initialize(initInfo)
   {
-    console.log("MathUnitReview.initialize", initInfo);
+    console.log("MathUnitReview.initialize");
     const player = GetPlayer();
     
     let questionInfo = {};
@@ -39,14 +39,7 @@ class MathUnitReview {
     ]
     
     MathUnitReview.articulateVars = vars;
-
-    console.log("Articulate variables:");
-    for (let key in MathUnitReview.articulateVars) {
-      console.log(key, MathUnitReview.articulateVars[key]);
-    }
-
     MathUnitReview.questionInfo = questionInfo
-    console.log("questionInfo", MathUnitReview.questionInfo);
     
     MathUnitReview.initializeQuestions();
   }
@@ -58,20 +51,28 @@ class MathUnitReview {
     const player = GetPlayer();
     const vars = MathUnitReview.articulateVars;
     const qInfo = MathUnitReview.questionInfo;
-    console.log(qInfo);
     
     const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
-    console.log("current question: ", currentQuestionNum);
+    
     if (currentQuestionNum < 1 || currentQuestionNum > qInfo.question.length) {
       console.log("WARNING: MathUnitReview.loadQuestion called with invalid question number (" + currentQuestionNum + ")");
       return;
     }
     
     const question = qInfo.question[currentQuestionNum - 1];
-    console.log("question", question);
     
     player.SetVar(vars.questionNumberLabel, currentQuestionNum);
     player.SetVar(vars.questionStem, question.stem);
+    
+    const responses = question.response;
+    for (let i = 0; i < responses.length; i++) {
+      player.SetVar(vars.response[i], responses[i]);
+    }
+  }
+  
+  static checkAnswers()
+  {
+    console.log("MathUnitReview.checkAnswers");
   }
 
   //------------------------------------------------------------------------------
@@ -80,11 +81,17 @@ class MathUnitReview {
   static initializeQuestions()
   {
     let qInfo = MathUnitReview.questionInfo;
+    const nResponses = MathUnitReview.articulateVars.response.length;
+    const letterMap = "ABCDE";
     
     qInfo.question = [];
     for (let i = 0; i < qInfo.numQuestions; i++) {
       let question = {};
       question.stem = "question stem #" + (i + 1);
+      question.response = [];
+      for (let j = 0; j < nResponses; j++) {
+        question.response.push("response " + (i + 1) + letterMap.charAt(j));
+      }
       
       qInfo.question.push(question);
     }
