@@ -8,6 +8,7 @@
 class MathUnitReview {
   static articulateVars = null;
   static questionInfo = null;  
+  static resourceMaterial = null;
   
   constructor() {
     console.log("WARNING: MathUnitReview constructor invoked unexpectedly");
@@ -44,9 +45,12 @@ class MathUnitReview {
       initInfo.answered4,
       initInfo.answered5
     ];
+    vars.resourceVars = initInfo.resourceVars;
+    
     
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
+    MathUnitReview.resourceMaterial = initInfo.resourceMaterial;
     
     MathUnitReview.initializeQuestions();
   }
@@ -140,11 +144,40 @@ class MathUnitReview {
     console.log("MathUnitReview.checkAnswers");
   }
   
-  static openResource()
+  static loadResources()
   {
-    window.open("https://www.google.com", "_blank");
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    const material = MathUnitReview.resourceMaterial;
+    
+    const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
+    const showVars = vars.resourceVars.show;
+    const urlVars = vars.resourceVars.url;
+    const references = material[currentQuestionNum - 1];
+        
+    for (let i = 0; i < showVars.length; i++) {
+      if (references.length > i) {
+        player.SetVar(showVars[i], true);
+        player.SetVar(urlVars[i], references[i].text);
+        
+      } else {
+        player.SetVar(urlVars[i], "");
+        player.SetVar(showVars[i], false);
+      }
+    }    
   }
-
+  
+  static openResource(resourceNumber)
+  {
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    const material = MathUnitReview.resourceMaterial;
+    
+    const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
+    const url = material[currentQuestionNum - 1][resourceNumber - 1].url;
+    window.open(url, "_blank");
+  }
+  
   //------------------------------------------------------------------------------
   // private methods
   //------------------------------------------------------------------------------
