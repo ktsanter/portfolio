@@ -6,9 +6,8 @@
 // TODO:
 //--------------------------------------------------------------------------------
 class MathUnitReview {
-  static questionInfo = null;
-  //static numQuestions = -1;
   static articulateVars = null;
+  static questionInfo = null;  
   
   constructor() {
     console.log("WARNING: MathUnitReview constructor invoked unexpectedly");
@@ -27,6 +26,7 @@ class MathUnitReview {
     MathUnitReview.questionInfo = questionInfo;
     
     let vars = {};
+    vars.titleText = initInfo.titleText;
     vars.currentQuestionNumber = initInfo.currentQuestionNumber;
     vars.currentQuestionSelection = initInfo.currentQuestionSelection;
     vars.questionNumberLabel = initInfo.questionNumberLabel;
@@ -139,6 +139,11 @@ class MathUnitReview {
   {
     console.log("MathUnitReview.checkAnswers");
   }
+  
+  static openResource()
+  {
+    window.open("https://www.google.com", "_blank");
+  }
 
   //------------------------------------------------------------------------------
   // private methods
@@ -148,7 +153,7 @@ class MathUnitReview {
     let qInfo = MathUnitReview.questionInfo;
     const nResponses = MathUnitReview.articulateVars.response.length;
     const letterMap = "ABCDE";
-    
+        
     qInfo.question = [];
     for (let i = 0; i < qInfo.numQuestions; i++) {
       let question = {};
