@@ -50,9 +50,9 @@ class MathUnitReview {
     
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
-    MathUnitReview.resourceMaterial = initInfo.resourceMaterial;
     
     MathUnitReview.initializeQuestions();
+    MathUnitReview.initializeResources();
   }
   
   static loadQuestion()
@@ -76,7 +76,7 @@ class MathUnitReview {
     
     const responses = question.response;
     for (let i = 0; i < responses.length; i++) {
-      player.SetVar(vars.response[i], responses[i]);
+      player.SetVar(vars.response[i], responses[i].text);
     }
   }
   
@@ -186,23 +186,389 @@ class MathUnitReview {
     let qInfo = MathUnitReview.questionInfo;
     const nResponses = MathUnitReview.articulateVars.response.length;
     const letterMap = "ABCDE";
+    
+    const questionMakerMap = [
+      MathUnitReview.makeQuestionType1,
+      MathUnitReview.makeQuestionType2,
+      MathUnitReview.makeQuestionType3,
+      MathUnitReview.makeQuestionType4,
+      MathUnitReview.makeQuestionType5
+    ];
         
     qInfo.question = [];
-    for (let i = 0; i < qInfo.numQuestions; i++) {
-      let question = {};
-      question.stem = "question stem #" + (i + 1);
-      question.response = [];
-      for (let j = 0; j < nResponses; j++) {
-        question.response.push("response " + (i + 1) + letterMap.charAt(j));
-      }
-      question.selection = -1;
-      
-      qInfo.question.push(question);
+    for (let i = 0; i < qInfo.numQuestions; i++) {      
+      const q = questionMakerMap[i]();
+      q.selection = -1;
+      qInfo.question.push(q);
     }
     
     MathUnitReview.questionInfo = qInfo;
   }
+  
+  static initializeResources()
+  {
+    MathUnitReview.resourceMaterial = [
+      // question 1
+      [
+      {"text": "aaaaa", "url": "https://www.google.com"}
+      ],
 
+      // question 2
+      [
+      {"text": "bbbb", "url": "https://www.nytimes.com"},
+      {"text": "ccc", "url": "https://www.freep.com"}
+      ],
+
+      // question 3
+      [],
+
+      // question 4
+      [],
+
+      // question 5
+      []
+    ];    
+  }
+  
+  static makeQuestionType1()
+  {
+    let question = {};
+    
+    let stem = 
+      "Line segment AB has the endpoints %%pointA%% and %%pointB%%.\n" +
+      "Line segment CD has the endpoints %%pointC%% and %%pointD%%.\n\n" +
+      "What is the relationship between AB and CD?"
+    
+    const makeParallel = Math.random() > 0.5;
+    
+    let response = [
+      {"correct": makeParallel, "text":"parallel"},
+      {"correct": !makeParallel, "text":"perpendicular"},
+      {"correct": false, "text":"congruent"},
+      {"correct": false, "text":"skew"}
+    ];
+    
+    response.sort(() => { return Math.random() - 0.5; }); 
+    
+    const pointA = MathUnitReview.pickPoint();   
+    const slopeAB = MathUnitReview.randomSlope();
+    let pointB, pointC, pointD;
+    let slopeCD;
+    
+    let coordDistFactor = MathUnitReview.randomInteger(1, 4);
+    pointB = {
+      "x": pointA.x + coordDistFactor * slopeAB.denominator,
+      "y": pointA.y + coordDistFactor * slopeAB.numerator
+    }
+    
+    slopeCD = makeParallel ? slopeAB : MathUnitReview.perpendicularSlope(slopeAB);
+    
+    pointC = MathUnitReview.pickDifferentPoint(pointA);
+    coordDistFactor = MathUnitReview.randomInteger(1, 4);
+    pointD = {
+      "x": pointC.x + coordDistFactor * slopeCD.denominator,
+      "y": pointC.y + coordDistFactor * slopeCD.numerator
+    }
+    
+    question.stem = MathUnitReview.replaceKeywords(
+      stem, {
+        "pointA": MathUnitReview.formatPoint(pointA),
+        "pointB": MathUnitReview.formatPoint(pointB),
+        "pointC": MathUnitReview.formatPoint(pointC),
+        "pointD": MathUnitReview.formatPoint(pointD)
+      }
+    );
+    question.response = response;
+    
+    return question;
+  }
+  
+  static makeQuestionType2()
+  {
+    let question = {};
+    
+    let stem = 
+      "Find the equation of the line that is\n" +
+      "%%relation%% to the line %%line1%%\n" +
+      "and passes through the point %%pointX%%.\n\n\n"
+
+    const makeParallel = Math.random() > 0.5;    
+    const slope1 = MathUnitReview.handySlope();
+    
+    const line1 = {
+      "m": slope1,
+      "b": Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 7)
+    }
+    
+    let pointX = MathUnitReview.pickPoint();    
+    while (MathUnitReview.pointOnLine(pointX, line1)) {
+      pointX = MathUnitReview.pickPoint();
+    }
+
+    const slopeSolution = makeParallel ? {...slope1} : MathUnitReview.perpendicularSlope(slope1);
+    const lineSolution = {
+      "m": slopeSolution,
+      "b": pointX.y - ((slopeSolution.numerator / slopeSolution.denominator) * pointX.x)
+    }
+    
+    question.stem = MathUnitReview.replaceKeywords(
+      stem, {
+        "relation": makeParallel ? "parallel" : "perpendicular", 
+        "line1": MathUnitReview.formatLine(line1),
+        "pointX": MathUnitReview.formatPoint(pointX)
+      }
+    );
+    
+    let otherPoint = {...pointX};
+    otherPoint.y += MathUnitReview.randomInteger(1,5);
+    
+    let distractor1 = {...lineSolution};
+    distractor1.b = otherPoint.y - ((distractor1.m.numerator / distractor1.m.denominator) * otherPoint.x);
+
+    let distractor2 = {...lineSolution};
+    distractor2.m = MathUnitReview.perpendicularSlope(lineSolution.m);
+    distractor1.b = otherPoint.y - ((distractor2.m.numerator / distractor2.m.denominator) * otherPoint.x);
+
+    let distractor3 = {...lineSolution};
+    distractor3.m = MathUnitReview.perpendicularSlope(lineSolution.m);
+    distractor3.b = otherPoint.y - ((distractor3.m.numerator / distractor3.m.denominator) * otherPoint.x);
+    
+    
+    let response = [
+      {"correct": true, "text":  MathUnitReview.formatLine(lineSolution)},
+      {"correct": false, "text": MathUnitReview.formatLine(distractor1)},
+      {"correct": false, "text": MathUnitReview.formatLine(distractor2)},
+      {"correct": false, "text": MathUnitReview.formatLine(distractor3)},
+    ];
+    response.sort(() => { return Math.random() - 0.5; }); 
+    
+    question.response = response;
+    
+    return question;
+  }
+  
+  static makeQuestionType3()
+  {
+    console.log("MathUnitReview.makeQuestionType3");
+    let question = {};
+    
+    let stem = 
+      "Line segment AB has endpoints at %%pointA%% and %%pointB%%.\n\n" +
+      "What are the coordinates of a point that partitions the segment into a %%ratio%% ratio?\n\n\n";
+    
+    const ratioNumerator = MathUnitReview.randomInteger(1, 5);
+    const ratioDenominator = MathUnitReview.randomInteger(ratioNumerator + 1, ratioNumerator + 5);
+    const ratio = {
+      "numerator": ratioNumerator,
+      "denominator": ratioDenominator
+    };
+    const slope = MathUnitReview.randomSlope();
+    
+    const pointA = MathUnitReview.pickPoint();
+    
+    let pointC = {
+      "x": pointA.x + ratio.numerator * slope.denominator,
+      "y": pointA.y + ratio.numerator * slope.numerator
+    }
+    let pointB = {
+      "x": pointA.x + ratio.denominator * slope.denominator,
+      "y": pointA.y + ratio.denominator * slope.numerator
+    }
+    
+    question.stem = MathUnitReview.replaceKeywords(
+      stem, {
+        "pointA": MathUnitReview.formatPoint(pointA),
+        "pointB": MathUnitReview.formatPoint(pointB),
+        "ratio": MathUnitReview.formatRatio(ratio)        
+      }
+    );
+
+    let distractor1 = {...pointC};
+    distractor1.x += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    distractor1.y += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    
+    let distractor2 = {...pointC};
+    distractor2.x += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    distractor2.y += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    
+    let distractor3 = {...pointC};
+    distractor3.x += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    distractor3.y += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
+    
+    let response = [
+      {"correct": true, "text":  MathUnitReview.formatPoint(pointC)},
+      {"correct": false, "text": MathUnitReview.formatPoint(distractor1)},
+      {"correct": false, "text": MathUnitReview.formatPoint(distractor2)},
+      {"correct": false, "text": MathUnitReview.formatPoint(distractor3)}
+    ];
+    response.sort(() => { return Math.random() - 0.5; }); 
+    
+    question.response = response;
+    
+    return question;
+  }
+  
+  static makeQuestionType4()
+  {
+    console.log("MathUnitReview.makeQuestionType4");
+
+    let question = {};
+  
+  /*
+    let question = {};
+    question.stem = "stem #4\n\n\n\n\n";
+
+    let response = [
+      {"correct": true, "text":  "aaa"},
+      {"correct": false, "text":  "bbb"},
+      {"correct": false, "text":  "ccc"},
+      {"correct": false, "text":  "ddd"}
+    ];
+    response.sort(() => { return Math.random() - 0.5; }); 
+    
+    question.response = response;
+    */
+    return question;
+  }
+  
+  static makeQuestionType5()
+  {
+    console.log("MathUnitReview.makeQuestionType5");
+
+    let question = {};
+/*    
+    question.stem = "stem #5\n\n\n\n\n";
+
+    let response = [
+      {"correct": true, "text":  "aaa"},
+      {"correct": false, "text":  "bbb"},
+      {"correct": false, "text":  "ccc"},
+      {"correct": false, "text":  "ddd"}
+    ];
+    response.sort(() => { return Math.random() - 0.5; }); 
+    
+    question.response = response;
+  */  
+    return question;
+  }
+  
+  static pickDifferentPoint(point)
+  {
+    let p = MathUnitReview.pickPoint();
+    while (p.x == point.x && p.y == point.y) {
+      p = MathUnitReview.pickPoint();
+    }
+    return p;
+  }
+ 
+  static pickPoint() 
+  {
+    const MINCOORD = -15;
+    const MAXCOORD = 15;
+    
+    return {
+      "x": MathUnitReview.randomInteger(MINCOORD, MAXCOORD),
+      "y": MathUnitReview.randomInteger(MINCOORD, MAXCOORD)
+    };
+  }
+  
+  static randomSlope()
+  {
+    const numeratorSign = Math.sign(Math.random() - 0.5);
+    const numerator = numeratorSign * MathUnitReview.randomInteger(1, 10);
+    
+    let denominator = MathUnitReview.randomInteger(1, 10);
+    while (denominator == numerator) {
+      denominator = MathUnitReview.randomInteger(1, 10);
+    }
+    
+    return {
+      "numerator": numerator,
+      "denominator": denominator
+    }
+  }
+  
+  static handySlope()
+  {
+    const possibleNumerator = [1, 2, 4, 5];
+    const possibleDenominator = [1, 2, 4, 5];
+    
+    let slope = {
+      "numerator": possibleDenominator[MathUnitReview.randomInteger(0, possibleDenominator.length -1 )],
+      "denominator": possibleDenominator[MathUnitReview.randomInteger(0, possibleDenominator.length -1 )]
+    };
+    
+    slope.numerator *= Math.sign(Math.random() - 0.5);
+    
+    return slope;
+  }
+  
+  static perpendicularSlope(slope)
+  {
+    return {
+      "numerator": -1 * slope.denominator,
+      "denominator": slope.numerator
+    }
+  }
+ 
+  static pointOnLine(point, line)
+  {
+    const calculatedY = line.m * point.x + line.b;
+    
+    return calculatedY == point.y;
+  }
+  
+  static randomInteger(minval, maxval)
+  {
+    return Math.floor(Math.random() * (maxval - minval)) + minval;
+  }
+  
+  static replaceKeywords(str, keywords)
+  {
+    let s = str;
+    
+    for (let key in keywords) {
+      s = s.replaceAll("%%" + key + "%%", keywords[key]);
+    }
+    
+    return s;
+  }
+  
+  static formatPoint(point) 
+  {
+    return "(" + point.x + ", " + point.y + ")";
+  }
+  
+  static formatLine(line)
+  {    
+    let formattedB = line.b;
+    if (line.b == 0) {
+      formattedB = "";
+    } else if (line.b >= 0) {
+      formattedB = "+ " + line.b;
+    }
+    
+    const slope = line.m;
+    let formattedSlope = slope.numerator / slope.denominator;
+    if (formattedSlope == 1) {
+      formattedSlope = "";
+    } else if (formattedSlope == -1) {
+      formattedSlope = "-";
+    }
+    
+    return "y = " + formattedSlope + "x " + formattedB;
+  }
+  
+  static formatRatio(ratio)
+  {
+    let findGCD = (a, b) => {
+      return b ? findGCD(b, a%b) : a;
+    };
+    const gcd = findGCD(ratio.numerator, ratio.denominator);
+    
+    return (ratio.numerator / gcd) + ":" + (ratio.denominator / gcd);
+  }
+  
   //------------------------------------------------------------------------------
   // callbacks
   //------------------------------------------------------------------------------    

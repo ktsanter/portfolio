@@ -2,82 +2,82 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "6na9j4iuQ21":
+      case "6QbSsheBhD3":
         Script1();
         break;
-      case "6nO7Od0MMxs":
+      case "6lzG0LXe82Y":
         Script2();
         break;
-      case "6mlPm9l1B0m":
+      case "5ZzPTxxVdO1":
         Script3();
         break;
-      case "5gs4Fb8yxde":
+      case "6ZBqXL0r91a":
         Script4();
         break;
-      case "5czq0XxB3Lc":
+      case "6DkljJGFpER":
         Script5();
         break;
-      case "68ULj97kx4u":
+      case "6mYamBaBEjB":
         Script6();
         break;
-      case "6ZnMZq79W0q":
+      case "6JmlPR1f37R":
         Script7();
         break;
-      case "6CMEho5sbR4":
+      case "64We5YgOloi":
         Script8();
         break;
-      case "6ctbwFnr77D":
+      case "65Kb7Lgdkjd":
         Script9();
         break;
-      case "6lZr3lOwpTE":
+      case "5zFwd8uwDue":
         Script10();
         break;
-      case "5fbquB48I5q":
+      case "6XcyVscC6X7":
         Script11();
         break;
-      case "5pIC2cZRMSF":
+      case "5WRPvcBk5MS":
         Script12();
         break;
-      case "69j1riv0Cbr":
+      case "62gQMQ0beP3":
         Script13();
         break;
-      case "6ea7Pzk08Qs":
+      case "5kZWgZCEZ1V":
         Script14();
         break;
-      case "5rh3Aoc6RHZ":
+      case "5on0mP5NJ70":
         Script15();
         break;
-      case "5kRKT7Cr1v1":
+      case "6hWjTt9ePRR":
         Script16();
         break;
-      case "6fqpEN8V97v":
+      case "5hsnCCIwfml":
         Script17();
         break;
-      case "5lNG1sOQIbL":
+      case "6Q7n954IhWn":
         Script18();
         break;
-      case "6iGrM5eBAcl":
+      case "6U7DNhiCLQZ":
         Script19();
         break;
-      case "5z9PJHfZnEk":
+      case "6K9P2bxPKay":
         Script20();
         break;
-      case "5hyi639aAEP":
+      case "5sn1YDEDY4B":
         Script21();
         break;
-      case "5mcfAMfGf19":
+      case "5ekusqlwHbd":
         Script22();
         break;
-      case "6CLQWN7epf0":
+      case "6YcElpvBWM7":
         Script23();
         break;
-      case "6bCVUu1YEPP":
+      case "5aRuLemFRu4":
         Script24();
         break;
-      case "5cAEc6XgQvW":
+      case "5jeP7LZVowY":
         Script25();
         break;
-      case "6dssKbSb7Uv":
+      case "5wb18GVbp1f":
         Script26();
         break;
   }
@@ -121,29 +121,7 @@ function Script1()
 			"showResource4",
 			"showResource5"
 		]
-	},
-	
-	"resourceMaterial": [
-	    // question 1
-		[
-			{"text": "aaaaa", "url": "https://www.google.com"}
-		],
-
-		// question 2
-		[
-			{"text": "bbbb", "url": "https://www.nytimes.com"},
-			{"text": "ccc", "url": "https://www.freep.com"}
-		],
-		
-		// question 3
-		[],
-		
-		// question 4
-		[],
-		
-		// question 5
-		[]
-	]
+	}
 });
 
 }
