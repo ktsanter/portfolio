@@ -220,13 +220,19 @@ class MathUnitReview {
       ],
 
       // question 3
-      [],
+      [
+      {"text": "ddd", "url": "https://www.google.com"}
+      ],
 
       // question 4
-      [],
+      [
+      {"text": "eee", "url": "https://www.google.com"}
+      ],
 
       // question 5
-      []
+      [
+      {"text": "fff", "url": "https://www.google.com"}
+      ],
     ];    
   }
   
@@ -237,7 +243,7 @@ class MathUnitReview {
     let stem = 
       "Line segment AB has the endpoints %%pointA%% and %%pointB%%.\n" +
       "Line segment CD has the endpoints %%pointC%% and %%pointD%%.\n\n" +
-      "What is the relationship between AB and CD?"
+      "What is the relationship between AB and CD?\n\n\n"
     
     const makeParallel = Math.random() > 0.5;
     
@@ -290,7 +296,7 @@ class MathUnitReview {
     let stem = 
       "Find the equation of the line that is\n" +
       "%%relation%% to the line %%line1%%\n" +
-      "and passes through the point %%pointX%%.\n\n\n"
+      "and passes through the point %%pointX%%.\n\n\n\n\n"
 
     const makeParallel = Math.random() > 0.5;    
     const slope1 = MathUnitReview.handySlope();
@@ -349,12 +355,11 @@ class MathUnitReview {
   
   static makeQuestionType3()
   {
-    console.log("MathUnitReview.makeQuestionType3");
     let question = {};
     
     let stem = 
       "Line segment AB has endpoints at %%pointA%% and %%pointB%%.\n\n" +
-      "What are the coordinates of a point that partitions the segment into a %%ratio%% ratio?\n\n\n";
+      "What are the coordinates of a point that partitions the segment into a %%ratio%% ratio?\n\n\n\n\n";
     
     const ratioNumerator = MathUnitReview.randomInteger(1, 5);
     const ratioDenominator = MathUnitReview.randomInteger(ratioNumerator + 1, ratioNumerator + 5);
@@ -413,42 +418,143 @@ class MathUnitReview {
     console.log("MathUnitReview.makeQuestionType4");
 
     let question = {};
-  
-  /*
-    let question = {};
-    question.stem = "stem #4\n\n\n\n\n";
+    
+    let stem = 
+      "Which of these quadrilateral names is the most\n" +
+      "specific description of the polygon formed by:\n" +
+      "A: %%pointA%%\n" +
+      "B: %%pointB%%\n" +
+      "C: %%pointC%%\n" +
+      "D: %%pointD%%\n\n" 
+    
+    const quadNames = [/*"square", "rectangle", */ "rhombus" /*,  "parallelogram"*/];
+    const solution = quadNames[MathUnitReview.randomInteger(0, quadNames.length - 1)];
+    
+    const pointA = MathUnitReview.pickPoint();
+    const slopeAB = MathUnitReview.reduceRatio(MathUnitReview.randomSlope());
+    const scaleAB = MathUnitReview.randomInteger(1, 4);
+    
+    let pointB = {}, pointC = {}, pointD = {};
+    
+    pointB.x = pointA.x + scaleAB * slopeAB.denominator;
+    pointB.y = pointA.y + scaleAB * slopeAB.numerator;
+    
+    let slopeBC = {}, slopeAD = {}, slopeCD = {};
+    let scaleBC, scaleAD, scaleCD;
 
+    if (solution == "square") {
+      slopeBC = MathUnitReview.perpendicularSlope(slopeAB);
+      slopeAD = MathUnitReview.perpendicularSlope(slopeAB);
+      slopeCD = {...slopeAB};
+      
+        
+    } else if (solution == "rectangle") {
+      slopeBC = MathUnitReview.perpendicularSlope(slopeAB);
+      slopeAD = MathUnitReview.perpendicularSlope(slopeAB);
+      slopeCD = {...slopeAB};
+      
+    } else if (solution == "rhombus") {
+      slopeBC = MathUnitReview.handySlope();
+      while (
+        (slopeBC.numerator == slopeAB.numerator && slopeBC.denominator == slopeAB.denominator) ||
+        (slopeBC.numerator == -1 * slopeAB.denominator && slopeBC.denominator == slopeAB.numerator)
+      ) slopeBC = MathUnitReview.handySlope();
+      slopeAD = {...slopeBC};
+      slopeCD = {...slopeAB};
+
+      pointD.x = pointA.x + scaleAB * slopeAD.denominator;
+      pointD.y = pointA.y + scaleAB * slopeAD.numerator;
+      pointC.x = pointB.x + scaleAB * slopeBC.denominator;
+      pointC.y = pointB.y + scaleAB * slopeBC.numerator;
+      
+    } else { // parallelogram
+      slopeAD = MathUnitReview.handySlope();
+      while (
+        (slopeAD.numerator == slopeAB.numerator && slopeAD.denominator == slopeAB.denominator) ||
+        (slopeAD.numerator == -1 * slopeAB.denominator && slopeAD.denominator == slopeAB.numerator)
+      ) slopeAD = MathUnitReview.handySlope();
+      pointD.x = pointA.x + slopeAD.denominator;
+      pointD.y = pointA.y + slopeAD.numerator;
+      pointC.x = pointB.x + slopeAD.denominator;
+      pointC.y = pointB.y + slopeAD.numerator;
+    }
+    
+    console.log(solution);
+    console.log("AB", MathUnitReview.formatRatio(slopeAB), scaleAB);
+    //console.log("BC", MathUnitReview.formatRatio(slopeBC));
+    //console.log("CD", MathUnitReview.formatRatio(slopeCD));
+    console.log("AD", MathUnitReview.formatRatio(slopeAD));
+    
+    question.stem = MathUnitReview.replaceKeywords(
+      stem, {
+        "pointA": MathUnitReview.formatPoint(pointA),
+        "pointB": MathUnitReview.formatPoint(pointB),
+        "pointC": MathUnitReview.formatPoint(pointC),
+        "pointD": MathUnitReview.formatPoint(pointD)
+      }
+    );
+    
     let response = [
-      {"correct": true, "text":  "aaa"},
-      {"correct": false, "text":  "bbb"},
-      {"correct": false, "text":  "ccc"},
-      {"correct": false, "text":  "ddd"}
+      {"correct": solution == "square", "text":  "square"},
+      {"correct": solution == "rectangle", "text": "rectangle"},
+      {"correct": solution == "rhombus", "text": "rhombus"},
+      {"correct": solution == "parallelogram", "text": "parallelogram"}
     ];
     response.sort(() => { return Math.random() - 0.5; }); 
     
     question.response = response;
-    */
+
     return question;
   }
   
   static makeQuestionType5()
   {
-    console.log("MathUnitReview.makeQuestionType5");
-
     let question = {};
-/*    
-    question.stem = "stem #5\n\n\n\n\n";
 
+    let stem = 
+      "A triangle has vertices at\n" +
+      "A: %%pointA%%\n" +
+      "B: %%pointB%%\n" +
+      "C: %%pointC%%\n" +
+      "Side AB makes a right angle with side BC.\n\n" +
+      "What is the area of the triangle?";
+    
+    const pointA = MathUnitReview.pickPoint();
+    const slopeAB = MathUnitReview.randomSlope();
+    const slopeAC = MathUnitReview.perpendicularSlope(slopeAB);
+    const scaleFactorAB = MathUnitReview.randomInteger(1, 4);
+    const scaleFactorAC = MathUnitReview.randomInteger(1, 4);
+    
+    let pointB = {};
+    pointB.x = pointA.x + scaleFactorAB * slopeAB.numerator;
+    pointB.y = pointA.y + scaleFactorAB * slopeAB.denominator;
+    
+    let pointC = {};
+    pointC.x = pointA.x + scaleFactorAC * slopeAC.numerator;
+    pointC.y = pointA.y + scaleFactorAC * slopeAC.denominator;
+
+    question.stem = MathUnitReview.replaceKeywords(
+      stem, {
+        "pointA": MathUnitReview.formatPoint(pointA),
+        "pointB": MathUnitReview.formatPoint(pointB),
+        "pointC": MathUnitReview.formatPoint(pointC)
+      }
+    );
+    
+    const distAB = MathUnitReview.distance(pointA, pointB);
+    const distAC = MathUnitReview.distance(pointA, pointC);
+    const solution = distAB * distAC / 2;
+    
     let response = [
-      {"correct": true, "text":  "aaa"},
-      {"correct": false, "text":  "bbb"},
-      {"correct": false, "text":  "ccc"},
-      {"correct": false, "text":  "ddd"}
+      {"correct": true, "text":  solution.toFixed(0)},
+      {"correct": false, "text": (solution + MathUnitReview.randomInteger(1, 2)).toFixed(0)},
+      {"correct": false, "text": (solution - MathUnitReview.randomInteger(1, 2)).toFixed(0)},
+      {"correct": false, "text": (solution + MathUnitReview.randomInteger(3, 4)).toFixed(0)}
     ];
     response.sort(() => { return Math.random() - 0.5; }); 
     
     question.response = response;
-  */  
+
     return question;
   }
   
@@ -523,6 +629,11 @@ class MathUnitReview {
     return Math.floor(Math.random() * (maxval - minval)) + minval;
   }
   
+  static distance(a, b)
+  {
+    return Math.sqrt( (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) );
+  }
+  
   static replaceKeywords(str, keywords)
   {
     let s = str;
@@ -532,6 +643,14 @@ class MathUnitReview {
     }
     
     return s;
+  }
+  
+  static formatToTwoPlaces(n)
+  {
+    const rounded = "" + Math.round(n * 100) / 100;
+    console.log(rounded);
+    
+    return "" + rounded;
   }
   
   static formatPoint(point) 
@@ -558,15 +677,25 @@ class MathUnitReview {
     
     return "y = " + formattedSlope + "x " + formattedB;
   }
-  
-  static formatRatio(ratio)
+ 
+  static reduceRatio(ratio)
   {
     let findGCD = (a, b) => {
       return b ? findGCD(b, a%b) : a;
     };
     const gcd = findGCD(ratio.numerator, ratio.denominator);
     
-    return (ratio.numerator / gcd) + ":" + (ratio.denominator / gcd);
+    return {
+      "numerator": ratio.numerator / gcd,
+      "denominator": ratio.denominator / gcd
+    };
+  }
+  
+  static formatRatio(ratio)
+  {
+    const reduced = MathUnitReview.reduceRatio(ratio);
+    
+    return (reduced.numerator) + ":" + (reduced.denominator);
   }
   
   //------------------------------------------------------------------------------
