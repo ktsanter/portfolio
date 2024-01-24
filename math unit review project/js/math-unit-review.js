@@ -46,7 +46,7 @@ class MathUnitReview {
       initInfo.answered5
     ];
     vars.resourceVars = initInfo.resourceVars;
-    
+    vars.resultsAvailable = initInfo.resultsAvailable;    
     
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
@@ -141,7 +141,11 @@ class MathUnitReview {
 
   static checkAnswers()
   {
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    
     console.log("MathUnitReview.checkAnswers");
+    player.SetVar(vars.resultsAvailable, true);
   }
   
   static loadResources()

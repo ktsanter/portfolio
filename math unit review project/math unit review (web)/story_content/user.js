@@ -2,82 +2,82 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "6ZRY4MXvXha":
+      case "5YeAqtYHwNr":
         Script1();
         break;
-      case "643cLL0N8Uc":
+      case "5iagkLxnHtW":
         Script2();
         break;
-      case "6pfGdHN1Zbl":
+      case "5tBpM5nmNN7":
         Script3();
         break;
-      case "6ndoSern2X1":
+      case "6pQdrQC8v4J":
         Script4();
         break;
-      case "5lR3m8zfg3w":
+      case "6IGPIUMpIJb":
         Script5();
         break;
-      case "6T5V3V9XuMq":
+      case "6rJEU9Kaqq0":
         Script6();
         break;
-      case "67WWXPBRXUi":
+      case "6cWwvkfDGbb":
         Script7();
         break;
-      case "5nLu6IURUpk":
+      case "6V3DmH1tnHR":
         Script8();
         break;
-      case "6UM74lyQZlM":
+      case "5huvJAtyhPS":
         Script9();
         break;
-      case "61HtQFhvau3":
+      case "6PnpNFJ4KNe":
         Script10();
         break;
-      case "6VTxyLiXq9Y":
+      case "6hqiIaqoiK7":
         Script11();
         break;
-      case "6djkmsEIghO":
+      case "5ZduhOQA0Yd":
         Script12();
         break;
-      case "5Yt0VxG45P6":
+      case "6AzT3qhJeae":
         Script13();
         break;
-      case "5b6jszR5TEB":
+      case "6UDzblPkNty":
         Script14();
         break;
-      case "6lLyE5cLnaW":
+      case "6grkAVqeIzY":
         Script15();
         break;
-      case "6PZzj4NXPwD":
+      case "6a95QI4XzBD":
         Script16();
         break;
-      case "5sBLS6s5U6W":
+      case "6K9oN85Y7bz":
         Script17();
         break;
-      case "5v97lHogo0t":
+      case "5s8muujYVI0":
         Script18();
         break;
-      case "69VEZbv0CtN":
+      case "66sRxEN9w8q":
         Script19();
         break;
-      case "62ay09wQtuS":
+      case "6HKGj4GesOP":
         Script20();
         break;
-      case "5jX6OOsIGj1":
+      case "6pcLRRzzT1y":
         Script21();
         break;
-      case "6emucQSM5RK":
+      case "5e6Mbe4mSd7":
         Script22();
         break;
-      case "5juf00MuQ98":
+      case "6eAw5GETHn9":
         Script23();
         break;
-      case "6MHUUIsT6Ay":
+      case "6J6NufaRkTJ":
         Script24();
         break;
-      case "5fYHaEvF9b2":
+      case "5WTclh8iONy":
         Script25();
         break;
-      case "6RrBPF6HQmA":
+      case "6jKUYPfyIGZ":
         Script26();
         break;
   }
@@ -121,7 +121,9 @@ function Script1()
 			"showResource4",
 			"showResource5"
 		]
-	}
+	},
+	
+	"resultsAvailable": "resultsAvailable"
 });
 
 }
