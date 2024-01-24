@@ -2,83 +2,86 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "5YeAqtYHwNr":
+      case "5vbvL7kxBMU":
         Script1();
         break;
-      case "5iagkLxnHtW":
+      case "5tM2KpdtscR":
         Script2();
         break;
-      case "5tBpM5nmNN7":
+      case "5VglEw8Kvqc":
         Script3();
         break;
-      case "6pQdrQC8v4J":
+      case "5gXnykIwWXQ":
         Script4();
         break;
-      case "6IGPIUMpIJb":
+      case "62rTC7kTkYc":
         Script5();
         break;
-      case "6rJEU9Kaqq0":
+      case "64HjUMGiidN":
         Script6();
         break;
-      case "6cWwvkfDGbb":
+      case "5V8eUzLpSN8":
         Script7();
         break;
-      case "6V3DmH1tnHR":
+      case "5fumEtCBefi":
         Script8();
         break;
-      case "5huvJAtyhPS":
+      case "6Lcd2rw6XN3":
         Script9();
         break;
-      case "6PnpNFJ4KNe":
+      case "6FogxpbnTNT":
         Script10();
         break;
-      case "6hqiIaqoiK7":
+      case "6XCUxurwMXy":
         Script11();
         break;
-      case "5ZduhOQA0Yd":
+      case "5p408FJCUdS":
         Script12();
         break;
-      case "6AzT3qhJeae":
+      case "5ohUqxSuBJt":
         Script13();
         break;
-      case "6UDzblPkNty":
+      case "5gGfhlG5Rxm":
         Script14();
         break;
-      case "6grkAVqeIzY":
+      case "6CgDLtuIPO9":
         Script15();
         break;
-      case "6a95QI4XzBD":
+      case "6pqttfZgFKC":
         Script16();
         break;
-      case "6K9oN85Y7bz":
+      case "6YgGD24GSpe":
         Script17();
         break;
-      case "5s8muujYVI0":
+      case "6du03xQkibd":
         Script18();
         break;
-      case "66sRxEN9w8q":
+      case "6KQQHW1UTbZ":
         Script19();
         break;
-      case "6HKGj4GesOP":
+      case "6kUP9FPIdam":
         Script20();
         break;
-      case "6pcLRRzzT1y":
+      case "6kNaFHdmpEx":
         Script21();
         break;
-      case "5e6Mbe4mSd7":
+      case "6B7HcU7SYqO":
         Script22();
         break;
-      case "6eAw5GETHn9":
+      case "64N9XfVQTnq":
         Script23();
         break;
-      case "6J6NufaRkTJ":
+      case "69iebJGX2WF":
         Script24();
         break;
-      case "5WTclh8iONy":
+      case "69i7veURBP8":
         Script25();
         break;
-      case "6jKUYPfyIGZ":
+      case "60SfVH4jzEa":
         Script26();
+        break;
+      case "6UvjOfw0V7c":
+        Script27();
         break;
   }
 }
@@ -123,7 +126,19 @@ function Script1()
 		]
 	},
 	
-	"resultsAvailable": "resultsAvailable"
+	"resultsAvailable": "resultsAvailable",
+	
+	"correctVars": [
+		"correct1",
+		"correct2",
+		"correct3",
+		"correct4",
+		"correct5"
+	],
+	
+	"percentScore": "percentScore",
+	"instructorName": "instructorName",
+	"studentName": "studentName"
 });
 
 }
@@ -251,5 +266,10 @@ function Script25()
 function Script26()
 {
   MathUnitReview.openResource(1);
+}
+
+function Script27()
+{
+  MathUnitReview.postResults();
 }
 

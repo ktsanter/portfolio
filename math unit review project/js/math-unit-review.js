@@ -18,7 +18,9 @@ class MathUnitReview {
   // public methods
   //------------------------------------------------------------------------------
   static initialize(initInfo)
-  {
+  { 
+    console.log("MathUnitReview.initialize");
+        
     const player = GetPlayer();
     
     let questionInfo = {};
@@ -32,12 +34,14 @@ class MathUnitReview {
     vars.currentQuestionSelection = initInfo.currentQuestionSelection;
     vars.questionNumberLabel = initInfo.questionNumberLabel;
     vars.questionStem = initInfo.questionStem;
+    
     vars.response = [
       initInfo.responseA,
       initInfo.responseB,
       initInfo.responseC,
       initInfo.responseD,
     ];
+    
     vars.questionAnswered = [
       initInfo.answered1,
       initInfo.answered2,
@@ -45,14 +49,20 @@ class MathUnitReview {
       initInfo.answered4,
       initInfo.answered5
     ];
+    
     vars.resourceVars = initInfo.resourceVars;
     vars.resultsAvailable = initInfo.resultsAvailable;    
+    vars.correctVars = initInfo.correctVars;    
+    vars.percentScore = initInfo.percentScore;
+    vars.studentName = initInfo.studentName;
+    vars.instructorName = initInfo.instructorName;
     
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
     
     MathUnitReview.initializeQuestions();
     MathUnitReview.initializeResources();
+    MathUnitReview.initializePeople();
   }
   
   static loadQuestion()
@@ -143,8 +153,28 @@ class MathUnitReview {
   {
     const player = GetPlayer();
     const vars = MathUnitReview.articulateVars;
+    const qInfo = MathUnitReview.questionInfo;
+        
+    const findCorrect = (q) => {
+      let correct = -1;
+      for (let i = 0; i < q.response.length && correct < 0; i++) {
+        correct = q.response[i].correct ? (i + 1) : -1;
+      }
+      return correct;
+    };
     
-    console.log("MathUnitReview.checkAnswers");
+    let countCorrect = 0;
+    for (let i = 0; i < qInfo.numQuestions; i++) {
+      const question = qInfo.question[i];
+      //const answerIsCorrect = (findCorrect(question) == question.selection);
+      const answerIsCorrect = (Math.random() < 0.5);
+      if (answerIsCorrect) countCorrect++;
+      player.SetVar(vars.correctVars[i], answerIsCorrect);
+    }
+    
+    const pct = (100 * countCorrect / qInfo.numQuestions).toFixed(0) + "";        
+    player.SetVar(vars.percentScore, pct);
+    
     player.SetVar(vars.resultsAvailable, true);
   }
   
@@ -180,6 +210,44 @@ class MathUnitReview {
     const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
     const url = material[currentQuestionNum - 1][resourceNumber - 1].url;
     window.open(url, "_blank");
+  }
+  
+  static postResults()
+  {
+    console.log('postResults');
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    
+    const completed = player.GetVar(vars.resultsAvailable);
+    
+    const instructor = player.GetVar(vars.instructorName);
+    const student = player.GetVar(vars.studentName);
+    const numQuestions =  MathUnitReview.questionInfo.numQuestions;
+    const score = player.GetVar(vars.percentScore);
+    const passed = (score >= 60);
+    
+    console.log('completed', completed);
+    console.log('instructor', instructor);
+    console.log('student', student);
+    console.log('score', score);
+    console.log('passed', passed);
+    
+    MathUnitReview.xAPIConfigure();
+    
+    const xAPIParams = { "verb": "", "result": {} };
+    
+    xAPIParams.verb = "completed";
+    xAPIParams.result = {
+      "score": {
+        "min": 0,
+        "max": numQuestions,
+        "scaled": score / 100.0
+      },
+      "response": instructor,
+      "success": passed,
+    }      
+
+    MathUnitReview.xAPISend(xAPIParams);
   }
   
   //------------------------------------------------------------------------------
@@ -223,6 +291,18 @@ class MathUnitReview {
     }
     
     MathUnitReview.questionInfo = qInfo;
+  }
+  
+  static initializePeople()
+  {
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+        
+    const student = "Student" + MathUnitReview.randomInteger(1,20).toString().padStart(2, "0");
+    const instructor = "Instructor" + MathUnitReview.randomInteger(1,3).toString().padStart(2, "0");
+        
+    player.SetVar(vars.studentName, student);
+    player.SetVar(vars.instructorName, instructor);    
   }
   
   static initializeResources()
@@ -716,5 +796,69 @@ class MathUnitReview {
   //------------------------------------------------------------------------------
   // utilities
   //------------------------------------------------------------------------------  
+  static xAPIConfigure()
+  {
+    const conf = {
+      "endpoint": "https://ksanter-test-lrs.lrs.io/xapi/",
+      "auth": "Basic " + toBase64("atelew:gijeli")
+    };
+    ADL.XAPIWrapper.changeConfig(conf);    
+  }
+  
+  static xAPISend(params)
+  {
+    console.log("xAPISend", params);
+    
+    const homeURL = "https://www.aardvark-studios.com/math-unit-review/story";
+    const objectName = "Math Unit Review";
+    const objectDescription = "Storyline project for math unit review";
+    const objectActivityType = "http://adlnet.gov/expapi/activities/assessment";
  
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    
+    const student = player.GetVar(vars.studentName);
+    const verbInfo = MathUnitReview.xAPIVerbLookup(params.verb);
+ 
+    const statement = {
+      "actor": {
+        "name": student,
+        "mbox": "mailto:" + student + "@bogusmail.com"
+      },
+      
+      "verb": {
+        "id": verbInfo.id,
+        "display": { "en-US": verbInfo.name }
+      },
+      
+      "object": {
+        "id": homeURL,
+        "definition": {
+          "name": { "en-US": objectName },
+          "description": { "en-US": objectDescription },
+          "type": objectActivityType
+        },
+        "objectType": "Activity"
+      }
+    };
+    
+    if (params.hasOwnProperty("result")) statement.result = params.result;
+
+    console.log(statement);
+
+    /*
+    const result = ADL.XAPIWrapper.sendStatement(statement);
+    console.log("xAPISend result", result);
+    */
+  }
+  
+  static xAPIVerbLookup(verbDescriptor) 
+  {
+    const verbInfo = {
+      "completed": {"name": "completed", "id": "http://adlnet.gov/expapi/verbs/completed"},
+      "abandoned": {"name": "abandoned", "id": "http://w3id.org/xapi/adl/verbs/abandoned"}
+    }
+    
+    return verbInfo[verbDescriptor];
+  }
 }

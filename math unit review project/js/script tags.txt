@@ -1,1 +1,2 @@
 <script type="text/javascript" src="../js/math-unit-review.js"></script>
+<script type="text/javascript" src="../js/xapiwrapper.min.js"></script>
