@@ -185,7 +185,6 @@ class MathUnitReview {
   {
     let qInfo = MathUnitReview.questionInfo;
     const nResponses = MathUnitReview.articulateVars.response.length;
-    const letterMap = "ABCDE";
     
     const questionMakerMap = [
       MathUnitReview.makeQuestionType1,
@@ -196,8 +195,25 @@ class MathUnitReview {
     ];
         
     qInfo.question = [];
-    for (let i = 0; i < qInfo.numQuestions; i++) {      
-      const q = questionMakerMap[i]();
+    for (let i = 0; i < qInfo.numQuestions; i++) {     
+      let q;
+      
+      if (i != 20) {
+        q = questionMakerMap[i]();
+        
+      } else {
+        const index = i + 1;
+        q = {
+          "stem": "stem for #" + index + "\n\n\n\n\n\n",
+          "response": [
+            {"correct": true, "text": "response" + index + "A"},
+            {"correct": false, "text": "response" + index + "B"},
+            {"correct": false, "text": "response" + index + "C"},
+            {"correct": false, "text": "response" + index + "D"}
+          ]
+        };
+      }
+      
       q.selection = -1;
       qInfo.question.push(q);
     }
@@ -359,7 +375,7 @@ class MathUnitReview {
     
     let stem = 
       "Line segment AB has endpoints at %%pointA%% and %%pointB%%.\n\n" +
-      "What are the coordinates of a point that partitions the segment into a %%ratio%% ratio?\n\n\n\n\n";
+      "What are the coordinates of a point that partitions the segment into a %%partitionRatio%% ratio?\n\n\n";
     
     const ratioNumerator = MathUnitReview.randomInteger(1, 5);
     const ratioDenominator = MathUnitReview.randomInteger(ratioNumerator + 1, ratioNumerator + 5);
@@ -384,10 +400,10 @@ class MathUnitReview {
       stem, {
         "pointA": MathUnitReview.formatPoint(pointA),
         "pointB": MathUnitReview.formatPoint(pointB),
-        "ratio": MathUnitReview.formatRatio(ratio)        
+        "partitionRatio": MathUnitReview.formatRatio(ratio)        
       }
     );
-
+    
     let distractor1 = {...pointC};
     distractor1.x += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
     distractor1.y += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
@@ -399,7 +415,7 @@ class MathUnitReview {
     let distractor3 = {...pointC};
     distractor3.x += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
     distractor3.y += Math.sign(Math.random() - 0.5) * MathUnitReview.randomInteger(1, 4);
-    
+  
     let response = [
       {"correct": true, "text":  MathUnitReview.formatPoint(pointC)},
       {"correct": false, "text": MathUnitReview.formatPoint(distractor1)},
@@ -415,8 +431,6 @@ class MathUnitReview {
   
   static makeQuestionType4()
   {
-    console.log("MathUnitReview.makeQuestionType4");
-
     let question = {};
     
     let stem = 
@@ -427,7 +441,7 @@ class MathUnitReview {
       "C: %%pointC%%\n" +
       "D: %%pointD%%\n\n" 
     
-    const quadNames = [/*"square", "rectangle", */ "rhombus" /*,  "parallelogram"*/];
+    const quadNames = ["square", "rectangle", "rhombus",  "parallelogram"];
     const solution = quadNames[MathUnitReview.randomInteger(0, quadNames.length - 1)];
     
     const pointA = MathUnitReview.pickPoint();
@@ -454,18 +468,13 @@ class MathUnitReview {
       slopeCD = {...slopeAB};
       
     } else if (solution == "rhombus") {
-      slopeBC = MathUnitReview.handySlope();
-      while (
-        (slopeBC.numerator == slopeAB.numerator && slopeBC.denominator == slopeAB.denominator) ||
-        (slopeBC.numerator == -1 * slopeAB.denominator && slopeBC.denominator == slopeAB.numerator)
-      ) slopeBC = MathUnitReview.handySlope();
-      slopeAD = {...slopeBC};
-      slopeCD = {...slopeAB};
-
-      pointD.x = pointA.x + scaleAB * slopeAD.denominator;
-      pointD.y = pointA.y + scaleAB * slopeAD.numerator;
-      pointC.x = pointB.x + scaleAB * slopeBC.denominator;
-      pointC.y = pointB.y + scaleAB * slopeBC.numerator;
+      const deltaX = pointB.x - pointA.x;
+      const deltaY = pointB.y - pointA.y;
+      
+      pointC.x = pointB.x + deltaX
+      pointC.y = pointA.y;
+      pointD.x = pointB.x;
+      pointD.y = pointA.y - deltaY
       
     } else { // parallelogram
       slopeAD = MathUnitReview.handySlope();
@@ -478,13 +487,7 @@ class MathUnitReview {
       pointC.x = pointB.x + slopeAD.denominator;
       pointC.y = pointB.y + slopeAD.numerator;
     }
-    
-    console.log(solution);
-    console.log("AB", MathUnitReview.formatRatio(slopeAB), scaleAB);
-    //console.log("BC", MathUnitReview.formatRatio(slopeBC));
-    //console.log("CD", MathUnitReview.formatRatio(slopeCD));
-    console.log("AD", MathUnitReview.formatRatio(slopeAD));
-    
+        
     question.stem = MathUnitReview.replaceKeywords(
       stem, {
         "pointA": MathUnitReview.formatPoint(pointA),
@@ -636,10 +639,10 @@ class MathUnitReview {
   
   static replaceKeywords(str, keywords)
   {
-    let s = str;
+    let s = (' ' + str).slice(1);
     
     for (let key in keywords) {
-      s = s.replaceAll("%%" + key + "%%", keywords[key]);
+      s = s.replace("%%" + key + "%%", keywords[key]);
     }
     
     return s;
