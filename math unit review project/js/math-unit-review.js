@@ -19,8 +19,6 @@ class MathUnitReview {
   //------------------------------------------------------------------------------
   static initialize(initInfo)
   { 
-    console.log("MathUnitReview.initialize");
-        
     const player = GetPlayer();
     
     let questionInfo = {};
@@ -30,6 +28,8 @@ class MathUnitReview {
     
     let vars = {};
     vars.titleText = initInfo.titleText;
+    vars.xAPIEnabled = initInfo.xAPIEnabled;
+    
     vars.currentQuestionNumber = initInfo.currentQuestionNumber;
     vars.currentQuestionSelection = initInfo.currentQuestionSelection;
     vars.questionNumberLabel = initInfo.questionNumberLabel;
@@ -59,6 +59,8 @@ class MathUnitReview {
     
     MathUnitReview.articulateVars = vars;
     MathUnitReview.questionInfo = questionInfo
+    
+    MathUnitReview.xAPIConfigure();
     
     MathUnitReview.initializeQuestions();
     MathUnitReview.initializeResources();
@@ -164,10 +166,13 @@ class MathUnitReview {
     };
     
     let countCorrect = 0;
+    console.log(qInfo.question);
     for (let i = 0; i < qInfo.numQuestions; i++) {
       const question = qInfo.question[i];
-      //const answerIsCorrect = (findCorrect(question) == question.selection);
-      const answerIsCorrect = (Math.random() < 0.5);
+      const answerIsCorrect = (findCorrect(question) == question.selection);
+      
+      console.log(i, findCorrect(question), question.selection, answerIsCorrect, countCorrect);
+      
       if (answerIsCorrect) countCorrect++;
       player.SetVar(vars.correctVars[i], answerIsCorrect);
     }
@@ -195,7 +200,7 @@ class MathUnitReview {
         player.SetVar(urlVars[i], references[i].text);
         
       } else {
-        player.SetVar(urlVars[i], "");
+        player.SetVar(urlVars[i], "\n");
         player.SetVar(showVars[i], false);
       }
     }    
@@ -210,30 +215,34 @@ class MathUnitReview {
     const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
     const url = material[currentQuestionNum - 1][resourceNumber - 1].url;
     window.open(url, "_blank");
+    
+    const xAPIParams = { "verb": "", "result": {} };
+    
+    xAPIParams.verb = "interacted";
+    xAPIParams.result = {
+      "response": url
+    }      
+
+    MathUnitReview.xAPISend(xAPIParams);    
   }
   
   static postResults()
   {
-    console.log('postResults');
     const player = GetPlayer();
     const vars = MathUnitReview.articulateVars;
     
     const completed = player.GetVar(vars.resultsAvailable);
     
     const instructor = player.GetVar(vars.instructorName);
-    const student = player.GetVar(vars.studentName);
     const numQuestions =  MathUnitReview.questionInfo.numQuestions;
     const score = player.GetVar(vars.percentScore);
     const passed = (score >= 60);
-    
-    console.log('completed', completed);
-    console.log('instructor', instructor);
-    console.log('student', student);
-    console.log('score', score);
-    console.log('passed', passed);
-    
-    MathUnitReview.xAPIConfigure();
-    
+
+    let answerResult = [];
+    for (let i = 0; i < numQuestions; i++) {
+      answerResult.push(player.GetVar(vars.correctVars[i]));
+    }
+        
     const xAPIParams = { "verb": "", "result": {} };
     
     xAPIParams.verb = "completed";
@@ -243,7 +252,10 @@ class MathUnitReview {
         "max": numQuestions,
         "scaled": score / 100.0
       },
-      "response": instructor,
+      "response": JSON.stringify({
+        "instructor": instructor,
+        "correct": answerResult
+      }),
       "success": passed,
     }      
 
@@ -310,28 +322,32 @@ class MathUnitReview {
     MathUnitReview.resourceMaterial = [
       // question 1
       [
-      {"text": "aaaaa", "url": "https://www.google.com"}
+        {"text": "Parallel and perpendicular lines. (Khan Academy)", "url": "https://www.khanacademy.org/math/cc-eighth-grade-math/cc-8th-geometry/cc-8th-angles-between-lines/v/identifying-parallel-and-perpendicular-lines#:~:text=Parallel%20lines%20are%20lines%20that,angles%20and%20symbols%20in%20diagrams."},
+        {"text": "Parallel and perpendicular lines. (Mathplanet)", "url": "https://www.mathplanet.com/education/algebra-1/formulating-linear-equations/parallel-and-perpendicular-lines"},
+        {"text": "What are parallel and perpendicular lines? (SplashLearn)", "url": "https://www.splashlearn.com/math-vocabulary/geometry/parallel-and-perpendicular-lines"}
       ],
 
       // question 2
       [
-      {"text": "bbbb", "url": "https://www.nytimes.com"},
-      {"text": "ccc", "url": "https://www.freep.com"}
+      {"text": "Equations of parallel and perpendicular lines (YouTube)", "url": "https://www.youtube.com/watch?v=LTb2-LE7StE"},
+      {"text": "Parallel and perpendicular lines (Mathematics LibreTexts)", "url": "https://math.libretexts.org/Courses/Hawaii_Community_College/Hawaii_Community_College_MA82X_Textbook/04%3A_Graphing_Lines/4.06%3A_Parallel_and_Perpendicular_Lines"}
       ],
 
       // question 3
       [
-      {"text": "ddd", "url": "https://www.google.com"}
+      {"text": "Directed Line Segments - Partitions and Ratios (MathBitsNotebook)", "url": "https://mathbitsnotebook.com/Geometry/CoordinateGeometry/CGdirectedsegments.html"},
+      {"text": "Dividing line segments accoring to ratio (YouTube)", "url": "https://www.youtube.com/watch?v=Cx-_PxD4DJM"}
       ],
 
       // question 4
       [
-      {"text": "eee", "url": "https://www.google.com"}
+      {"text": "Quadrilaterals classification (Varsity Tutors)", "url": "https://www.varsitytutors.com/hotmath/hotmath_help/topics/quadrilaterals"},
+      {"text": "Classifying quadrilaterals (Khan Academy)", "url": "https://www.khanacademy.org/math/cc-fifth-grade-math/properties-of-shapes/imp-quadrilaterals-2/v/classifying-shapes"}
       ],
 
       // question 5
       [
-      {"text": "fff", "url": "https://www.google.com"}
+      {"text": "Area of right triangle (Cuemath)", "url": "https://www.cuemath.com/measurement/area-of-right-triangle/"}
       ],
     ];    
   }
@@ -732,14 +748,6 @@ class MathUnitReview {
     return s;
   }
   
-  static formatToTwoPlaces(n)
-  {
-    const rounded = "" + Math.round(n * 100) / 100;
-    console.log(rounded);
-    
-    return "" + rounded;
-  }
-  
   static formatPoint(point) 
   {
     return "(" + point.x + ", " + point.y + ")";
@@ -798,6 +806,11 @@ class MathUnitReview {
   //------------------------------------------------------------------------------  
   static xAPIConfigure()
   {
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    const xAPIEnabled = player.GetVar(vars.xAPIEnabled);
+    if (!xAPIEnabled) return;
+    
     const conf = {
       "endpoint": "https://ksanter-test-lrs.lrs.io/xapi/",
       "auth": "Basic " + toBase64("atelew:gijeli")
@@ -807,16 +820,16 @@ class MathUnitReview {
   
   static xAPISend(params)
   {
-    console.log("xAPISend", params);
+    const player = GetPlayer();
+    const vars = MathUnitReview.articulateVars;
+    
+    const xAPIEnabled = player.GetVar(vars.xAPIEnabled);
     
     const homeURL = "https://www.aardvark-studios.com/math-unit-review/story";
     const objectName = "Math Unit Review";
     const objectDescription = "Storyline project for math unit review";
     const objectActivityType = "http://adlnet.gov/expapi/activities/assessment";
  
-    const player = GetPlayer();
-    const vars = MathUnitReview.articulateVars;
-    
     const student = player.GetVar(vars.studentName);
     const verbInfo = MathUnitReview.xAPIVerbLookup(params.verb);
  
@@ -844,19 +857,21 @@ class MathUnitReview {
     
     if (params.hasOwnProperty("result")) statement.result = params.result;
 
-    console.log(statement);
-
-    /*
-    const result = ADL.XAPIWrapper.sendStatement(statement);
-    console.log("xAPISend result", result);
-    */
+    if (xAPIEnabled) {
+      const result = ADL.XAPIWrapper.sendStatement(statement);
+      console.log("xAPISend result", result);
+      
+    } else {
+      console.log('xAPI disabled', statement);
+    }
   }
   
   static xAPIVerbLookup(verbDescriptor) 
   {
     const verbInfo = {
       "completed": {"name": "completed", "id": "http://adlnet.gov/expapi/verbs/completed"},
-      "abandoned": {"name": "abandoned", "id": "http://w3id.org/xapi/adl/verbs/abandoned"}
+      "abandoned": {"name": "abandoned", "id": "http://w3id.org/xapi/adl/verbs/abandoned"},
+      "interacted": {"name": "interacted", "id": "http://adlnet.gov/expapi/verbs/interacted"}
     }
     
     return verbInfo[verbDescriptor];

@@ -2,85 +2,85 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "5vbvL7kxBMU":
+      case "5stbWsl6WTt":
         Script1();
         break;
-      case "5tM2KpdtscR":
+      case "6YoKV5SGzKl":
         Script2();
         break;
-      case "5VglEw8Kvqc":
+      case "5uQQ0kazJKO":
         Script3();
         break;
-      case "5gXnykIwWXQ":
+      case "60fHkkQTjbD":
         Script4();
         break;
-      case "62rTC7kTkYc":
+      case "69Qf0qoV28F":
         Script5();
         break;
-      case "64HjUMGiidN":
+      case "6qZgYUYXweh":
         Script6();
         break;
-      case "5V8eUzLpSN8":
+      case "67xOiLUEGbd":
         Script7();
         break;
-      case "5fumEtCBefi":
+      case "6B28mFpAetC":
         Script8();
         break;
-      case "6Lcd2rw6XN3":
+      case "5w3z0XOhRIn":
         Script9();
         break;
-      case "6FogxpbnTNT":
+      case "61JbeoVKirP":
         Script10();
         break;
-      case "6XCUxurwMXy":
+      case "5sNAPPr9yAa":
         Script11();
         break;
-      case "5p408FJCUdS":
+      case "5n6GA5jiem8":
         Script12();
         break;
-      case "5ohUqxSuBJt":
+      case "6KKgJcCIic7":
         Script13();
         break;
-      case "5gGfhlG5Rxm":
+      case "6q0rX3t1oxt":
         Script14();
         break;
-      case "6CgDLtuIPO9":
+      case "69z9BpXfV5d":
         Script15();
         break;
-      case "6pqttfZgFKC":
+      case "6oFk0sdpNPW":
         Script16();
         break;
-      case "6YgGD24GSpe":
+      case "6q8NECVRXHy":
         Script17();
         break;
-      case "6du03xQkibd":
+      case "6mv0qAbvRWz":
         Script18();
         break;
-      case "6KQQHW1UTbZ":
+      case "6DFUs8ux5JD":
         Script19();
         break;
-      case "6kUP9FPIdam":
+      case "5qm7DGg7vqW":
         Script20();
         break;
-      case "6kNaFHdmpEx":
+      case "5b9Wa3TK8U2":
         Script21();
         break;
-      case "6B7HcU7SYqO":
+      case "5gnhAWNtSof":
         Script22();
         break;
-      case "64N9XfVQTnq":
+      case "5qdm0hZ97j0":
         Script23();
         break;
-      case "69iebJGX2WF":
+      case "5ztx6VWnM2u":
         Script24();
         break;
-      case "69i7veURBP8":
+      case "6jbuMORJqqU":
         Script25();
         break;
-      case "60SfVH4jzEa":
+      case "6RGV7vvbjMs":
         Script26();
         break;
-      case "6UvjOfw0V7c":
+      case "5rOQ1cxMyBX":
         Script27();
         break;
   }
@@ -90,6 +90,7 @@ function Script1()
 {
   MathUnitReview.initialize({
     "titleText": "titleText",
+    "xAPIEnabled": "xAPIEnabled",
 	
 	"numQuestions": "numQuestions",
 	"currentQuestionNumber": "currentQuestionNumber",
