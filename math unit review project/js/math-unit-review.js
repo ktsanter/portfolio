@@ -235,8 +235,8 @@ class MathUnitReview {
     
     const instructor = player.GetVar(vars.instructorName);
     const numQuestions =  MathUnitReview.questionInfo.numQuestions;
-    const score = player.GetVar(vars.percentScore);
-    const passed = (score >= 60);
+    const percentScore = player.GetVar(vars.percentScore);
+    const passed = (percentScore >= 60);
 
     let answerResult = [];
     for (let i = 0; i < numQuestions; i++) {
@@ -250,7 +250,8 @@ class MathUnitReview {
       "score": {
         "min": 0,
         "max": numQuestions,
-        "scaled": score / 100.0
+        "raw": Math.round((percentScore / 100.0) * numQuestions),
+        "scaled": percentScore / 100.0
       },
       "response": JSON.stringify({
         "instructor": instructor,
@@ -825,7 +826,7 @@ class MathUnitReview {
     
     const xAPIEnabled = player.GetVar(vars.xAPIEnabled);
     
-    const homeURL = "https://www.aardvark-studios.com/math-unit-review/story";
+    const objectId = "https://www.aardvark-studios.com/math-unit-review/story";
     const objectName = "Math Unit Review";
     const objectDescription = "Storyline project for math unit review";
     const objectActivityType = "http://adlnet.gov/expapi/activities/assessment";
@@ -845,7 +846,7 @@ class MathUnitReview {
       },
       
       "object": {
-        "id": homeURL,
+        "id": objectId,
         "definition": {
           "name": { "en-US": objectName },
           "description": { "en-US": objectDescription },
