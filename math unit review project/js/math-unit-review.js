@@ -166,12 +166,10 @@ class MathUnitReview {
     };
     
     let countCorrect = 0;
-    console.log(qInfo.question);
+
     for (let i = 0; i < qInfo.numQuestions; i++) {
       const question = qInfo.question[i];
       const answerIsCorrect = (findCorrect(question) == question.selection);
-      
-      console.log(i, findCorrect(question), question.selection, answerIsCorrect, countCorrect);
       
       if (answerIsCorrect) countCorrect++;
       player.SetVar(vars.correctVars[i], answerIsCorrect);
@@ -233,7 +231,9 @@ class MathUnitReview {
     
     const completed = player.GetVar(vars.resultsAvailable);
     
-    const instructor = player.GetVar(vars.instructorName);
+    const instructorName = player.GetVar(vars.instructorName);
+    const instructorInfo = MathUnitReview.infoFromName(instructorName);
+    
     const numQuestions =  MathUnitReview.questionInfo.numQuestions;
     const percentScore = player.GetVar(vars.percentScore);
     const passed = (percentScore >= 60);
@@ -243,9 +243,17 @@ class MathUnitReview {
       answerResult.push(player.GetVar(vars.correctVars[i]));
     }
         
-    const xAPIParams = { "verb": "", "result": {} };
+    const xAPIParams = {};
     
     xAPIParams.verb = "completed";
+    
+    xAPIParams.context = {
+      "instructor": {
+         "name": instructorName,
+         "mbox": 'mailto:' + instructorInfo.mbox
+      }
+    };
+    
     xAPIParams.result = {
       "score": {
         "min": 0,
@@ -254,7 +262,6 @@ class MathUnitReview {
         "scaled": percentScore / 100.0
       },
       "response": JSON.stringify({
-        "instructor": instructor,
         "correct": answerResult
       }),
       "success": passed,
@@ -311,8 +318,8 @@ class MathUnitReview {
     const player = GetPlayer();
     const vars = MathUnitReview.articulateVars;
         
-    const student = "Student" + MathUnitReview.randomInteger(1,20).toString().padStart(2, "0");
-    const instructor = "Instructor" + MathUnitReview.randomInteger(1,3).toString().padStart(2, "0");
+    const student = MathUnitReview.randomStudentName();
+    const instructor = MathUnitReview.randomInstructorName();
         
     player.SetVar(vars.studentName, student);
     player.SetVar(vars.instructorName, instructor);    
@@ -794,6 +801,40 @@ class MathUnitReview {
     return (reduced.numerator) + ":" + (reduced.denominator);
   }
   
+  static randomStudentName()
+  {
+    const studentList = [
+      "Houston, Lia", "Young, Tristan", "Patel, Jayson", "Clark, Riley", 
+      "Douglas, Jayce", "Davidson, Khloe", "Garcia, Madilyn", "Rogers, Hunter", 
+      "Douglas, Declan", "Torres, Jade", "Gibson, Thomas", "Allen, Phoenix", 
+      "Phillips, Andre", "Gutierrez, Zayne", "Johnson, Lilly", "Stokes, Eli", 
+      "Martin, Justin", "Hoffman, Elizabeth", "Klein, Charlie", "Green, Fatima"
+    ];
+    
+    return studentList[MathUnitReview.randomInteger(0, studentList.length - 1)];
+  }
+
+  static randomInstructorName()
+  {
+    const instructorList = ["Perkins, Oaklynn", "Gibson, Elizabeth", "Harris, Ashton", "Perez, Sadie", "Hopkins, Mark"];
+    
+    return instructorList[MathUnitReview.randomInteger(0, instructorList.length - 1)];
+  }
+
+  static infoFromName(name)
+  {
+    const splitName = name.split(", ");
+    
+    let info = {
+      "fullname": name,
+      "first": splitName[1],
+      "last": splitName[0],
+      "mbox": splitName[1].toLowerCase() + '.' + splitName[0].toLowerCase() + "@bogusmail.com"
+    }
+    
+    return info;
+  }  
+  
   //------------------------------------------------------------------------------
   // callbacks
   //------------------------------------------------------------------------------    
@@ -826,18 +867,20 @@ class MathUnitReview {
     
     const xAPIEnabled = player.GetVar(vars.xAPIEnabled);
     
-    const objectId = "https://www.aardvark-studios.com/math-unit-review/story";
+    const objectId = "https://www.aardvark-studios.com/math-unit-review/story/002/002";
     const objectName = "Math Unit Review";
     const objectDescription = "Storyline project for math unit review";
     const objectActivityType = "http://adlnet.gov/expapi/activities/assessment";
  
-    const student = player.GetVar(vars.studentName);
+    const studentName = player.GetVar(vars.studentName);
+    const studentInfo = MathUnitReview.infoFromName(studentName);
+    
     const verbInfo = MathUnitReview.xAPIVerbLookup(params.verb);
  
     const statement = {
       "actor": {
-        "name": student,
-        "mbox": "mailto:" + student + "@bogusmail.com"
+        "name": studentName,
+        "mbox": "mailto:" + studentInfo.mbox,
       },
       
       "verb": {
@@ -856,6 +899,7 @@ class MathUnitReview {
       }
     };
     
+    if (params.hasOwnProperty("context")) statement.context = params.context;
     if (params.hasOwnProperty("result")) statement.result = params.result;
 
     if (xAPIEnabled) {
