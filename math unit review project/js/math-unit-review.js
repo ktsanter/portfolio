@@ -214,9 +214,20 @@ class MathUnitReview {
     const url = material[currentQuestionNum - 1][resourceNumber - 1].url;
     window.open(url, "_blank");
     
+    const instructorName = player.GetVar(vars.instructorName);
+    const instructorInfo = MathUnitReview.infoFromName(instructorName);
+    
     const xAPIParams = { "verb": "", "result": {} };
     
     xAPIParams.verb = "interacted";
+
+    xAPIParams.context = {
+      "instructor": {
+         "name": instructorName,
+         "mbox": 'mailto:' + instructorInfo.mbox
+      }
+    };
+
     xAPIParams.result = {
       "response": url
     }      
@@ -409,7 +420,7 @@ class MathUnitReview {
       }
     );
     question.response = response;
-    
+        
     return question;
   }
   
@@ -500,8 +511,8 @@ class MathUnitReview {
       "y": pointA.y + ratio.numerator * slope.numerator
     }
     let pointB = {
-      "x": pointA.x + ratio.denominator * slope.denominator,
-      "y": pointA.y + ratio.denominator * slope.numerator
+      "x": pointC.x + ratio.denominator * slope.denominator,
+      "y": pointC.y + ratio.denominator * slope.numerator
     }
     
     question.stem = MathUnitReview.replaceKeywords(
@@ -565,15 +576,18 @@ class MathUnitReview {
     let scaleBC, scaleAD, scaleCD;
 
     if (solution == "square") {
-      slopeBC = MathUnitReview.perpendicularSlope(slopeAB);
-      slopeAD = MathUnitReview.perpendicularSlope(slopeAB);
-      slopeCD = {...slopeAB};
-      
+      pointD.x = pointA.x + scaleAB * slopeAB.numerator;
+      pointD.y = pointA.y - scaleAB * slopeAB.denominator;
+      pointC.x = pointB.x + scaleAB * slopeAB.numerator;
+      pointC.y = pointB.y - scaleAB * slopeAB.denominator;      
         
     } else if (solution == "rectangle") {
-      slopeBC = MathUnitReview.perpendicularSlope(slopeAB);
-      slopeAD = MathUnitReview.perpendicularSlope(slopeAB);
-      slopeCD = {...slopeAB};
+      let scaleAD = MathUnitReview.randomInteger(1, 4);
+      while (scaleAD == scaleAB) scaleAD = MathUnitReview.randomInteger(1, 4);
+      pointD.x = pointA.x + scaleAD * slopeAB.numerator;
+      pointD.y = pointA.y - scaleAD * slopeAB.denominator;
+      pointC.x = pointB.x + scaleAD * slopeAB.numerator;
+      pointC.y = pointB.y - scaleAD * slopeAB.denominator;      
       
     } else if (solution == "rhombus") {
       const deltaX = pointB.x - pointA.x;
