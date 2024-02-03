@@ -208,11 +208,11 @@ class MathUnitReview {
   {
     const player = GetPlayer();
     const vars = MathUnitReview.articulateVars;
-    const material = MathUnitReview.resourceMaterial;
+    const resources = MathUnitReview.resourceMaterial;
     
     const currentQuestionNum = player.GetVar(vars.currentQuestionNumber);
-    const url = material[currentQuestionNum - 1][resourceNumber - 1].url;
-    window.open(url, "_blank");
+    const resourceItem = resources[currentQuestionNum - 1][resourceNumber - 1];
+    window.open(resourceItem.url, "_blank");
     
     const instructorName = player.GetVar(vars.instructorName);
     const instructorInfo = MathUnitReview.infoFromName(instructorName);
@@ -229,7 +229,7 @@ class MathUnitReview {
     };
 
     xAPIParams.result = {
-      "response": url
+      "response": JSON.stringify(resourceItem)
     }      
 
     MathUnitReview.xAPISend(xAPIParams);    
@@ -881,7 +881,7 @@ class MathUnitReview {
     
     const xAPIEnabled = player.GetVar(vars.xAPIEnabled);
     
-    const objectId = "https://www.aardvark-studios.com/math-unit-review/story/002/002";
+    const objectId = "https://www.aardvark-studios.com/math-unit-review/story/003";
     const objectName = "Math Unit Review";
     const objectDescription = "Storyline project for math unit review";
     const objectActivityType = "http://adlnet.gov/expapi/activities/assessment";
